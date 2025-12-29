@@ -388,6 +388,23 @@
             transform: scale(1.1);
         }
 
+        .value-card.ready-to-place {
+            border-color: var(--chapman-gold);
+            box-shadow: 0 0 0 3px rgba(196, 160, 0, 0.3);
+            animation: pulse 1s infinite;
+        }
+
+        .rank-column.awaiting-drop {
+            border-color: var(--chapman-gold);
+            border-style: solid;
+            background: linear-gradient(135deg, #fffef8 0%, #fef9e7 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
         /* Ranking Area */
         .sorting-area {
             display: grid;
@@ -900,7 +917,7 @@
                 <div class="instructions">
                     <h2>📌 How This Assessment Works</h2>
                     <ol>
-                        <li><strong>Select Your Values:</strong> You'll choose up to 6 values from a comprehensive list of 91 core values that resonate most strongly with who you are.</li>
+                        <li><strong>Select Your Values:</strong> You'll choose up to 8 values from a comprehensive list of 91 core values that resonate most strongly with who you are.</li>
                         <li><strong>Add Custom Values:</strong> If something important to you isn't listed, you can create your own custom values to include in your selection.</li>
                         <li><strong>Rank Your Top 3:</strong> From your selected values, you'll prioritize your top 3 in order of importance—the principles that should guide your most significant decisions.</li>
                         <li><strong>Receive Your Results:</strong> Get a personalized report of your core values that you can download as a professional PDF document.</li>
@@ -925,10 +942,10 @@
                 </div>
 
                 <div class="selection-notice">
-                    📌 <strong>Selection Limit:</strong> You may select a maximum of 6 values. To choose a different value, first deselect one of your current choices.
+                    📌 <strong>Selection Limit:</strong> You may select a maximum of 8 values. To choose a different value, first deselect one of your current choices.
                 </div>
 
-                <div class="selection-counter" id="selectionCounter">🎯 Select up to 6 values that resonate with you</div>
+                <div class="selection-counter" id="selectionCounter">🎯 Select up to 8 values that resonate with you</div>
 
                 <div class="values-grid" id="valuesGrid"></div>
 
@@ -966,21 +983,22 @@
 
                 <div class="ranking-instructions">
                     <h3>📱 How to Rank Your Values</h3>
+                    <p style="text-align: center; margin-bottom: 15px; color: var(--text-secondary);">Choose either method below:</p>
                     <div class="instruction-steps">
                         <div class="instruction-step">
-                            <div class="icon">👆</div>
-                            <strong>Step 1</strong><br>
-                            Click and hold a value card below
+                            <div class="icon">🖱️</div>
+                            <strong>Method 1: Drag & Drop</strong><br>
+                            Click, hold, and drag a value card to a ranking box
                         </div>
                         <div class="instruction-step">
-                            <div class="icon">🫴</div>
-                            <strong>Step 2</strong><br>
-                            Drag it to a ranking box
+                            <div class="icon">👆</div>
+                            <strong>Method 2: Click to Place</strong><br>
+                            Click a value card, then click a ranking box to place it
                         </div>
                         <div class="instruction-step">
                             <div class="icon">🎯</div>
-                            <strong>Step 3</strong><br>
-                            Drop it in your chosen rank
+                            <strong>Goal</strong><br>
+                            Place your 3 most important values in order of priority
                         </div>
                     </div>
                 </div>
@@ -1259,8 +1277,8 @@
                 );
                 card.classList.remove('selected');
             } else {
-                if (selectedValues.length >= 6) {
-                    showModal('🚫 Selection Limit Reached', 'You can only select up to 6 values. Please deselect a value first if you\'d like to choose a different one.');
+                if (selectedValues.length >= 8) {
+                    showModal('🚫 Selection Limit Reached', 'You can only select up to 8 values. Please deselect a value first if you\'d like to choose a different one.');
                     return;
                 }
                 selectedValues.push(value);
@@ -1277,13 +1295,13 @@
             const count = selectedValues.length;
             
             if (count === 0) {
-                counter.textContent = '🎯 Select up to 6 values that resonate with you';
+                counter.textContent = '🎯 Select up to 8 values that resonate with you';
             } else if (count < 3) {
-                counter.textContent = `🎯 ${count} of 6 values selected — select at least ${3 - count} more to continue`;
-            } else if (count < 6) {
-                counter.textContent = `✅ ${count} of 6 values selected — you can select ${6 - count} more or continue`;
+                counter.textContent = `🎯 ${count} of 8 values selected — select at least ${3 - count} more to continue`;
+            } else if (count < 8) {
+                counter.textContent = `✅ ${count} of 8 values selected — you can select ${8 - count} more or continue`;
             } else {
-                counter.textContent = '✅ 6 values selected — maximum reached!';
+                counter.textContent = '✅ 8 values selected — maximum reached!';
             }
         }
 
@@ -1311,8 +1329,8 @@
                 return;
             }
             
-            if (selectedValues.length >= 6) {
-                showModal('🚫 Selection Limit Reached', 'You have already selected 6 values. Please deselect one before adding a custom value.');
+            if (selectedValues.length >= 8) {
+                showModal('🚫 Selection Limit Reached', 'You have already selected 8 values. Please deselect one before adding a custom value.');
                 return;
             }
             
@@ -1393,64 +1411,142 @@
             selectedValues.forEach(value => {
                 const card = document.createElement('div');
                 card.className = 'value-card';
-                card.draggable = true;
+                card.setAttribute('draggable', 'true');
                 if (value.isCustom) card.classList.add('custom');
+                
+                // Store value data on the element
+                card.dataset.valueName = value.name;
+                card.dataset.valueDesc = value.description;
+                card.dataset.isCustom = value.isCustom ? 'true' : 'false';
                 
                 card.innerHTML = `
                     <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
                     <p>${value.description}</p>
                 `;
                 
-                card.addEventListener('dragstart', (e) => {
-                    draggedValue = value;
-                    e.target.style.opacity = '0.5';
-                });
+                // Add drag events
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
                 
-                card.addEventListener('dragend', (e) => {
-                    e.target.style.opacity = '1';
-                });
+                // Add click-to-select as alternative to drag
+                card.addEventListener('click', () => handleCardClick(value));
                 
                 pool.appendChild(card);
             });
             
+            // Re-setup drop zones
+            setupDropZones();
             updateRankingDisplay();
         }
 
-        // Setup drag and drop
-        function setupDragAndDrop() {
-            document.addEventListener('dragover', (e) => e.preventDefault());
+        // Selected value for click-to-place method
+        let selectedForPlacement = null;
+
+        // Handle card click (alternative to drag)
+        function handleCardClick(value) {
+            // If already selected, deselect
+            if (selectedForPlacement && selectedForPlacement.name === value.name) {
+                selectedForPlacement = null;
+                document.querySelectorAll('.value-card').forEach(c => c.classList.remove('ready-to-place'));
+                document.querySelectorAll('.rank-column').forEach(c => c.classList.remove('awaiting-drop'));
+                return;
+            }
             
+            // Select this card
+            selectedForPlacement = value;
+            
+            // Visual feedback
+            document.querySelectorAll('.value-card').forEach(c => c.classList.remove('ready-to-place'));
+            const clickedCard = document.querySelector(`.value-card[data-value-name="${value.name}"]`);
+            if (clickedCard) clickedCard.classList.add('ready-to-place');
+            
+            // Highlight drop zones
+            document.querySelectorAll('.rank-column').forEach(c => c.classList.add('awaiting-drop'));
+        }
+
+        // Handle drag start
+        function handleDragStart(e) {
+            const card = e.target.closest('.value-card') || e.target;
+            draggedValue = {
+                name: card.dataset.valueName,
+                description: card.dataset.valueDesc,
+                isCustom: card.dataset.isCustom === 'true'
+            };
+            card.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', card.dataset.valueName);
+        }
+
+        // Handle drag end
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+            document.querySelectorAll('.rank-column').forEach(col => col.classList.remove('drag-over'));
+        }
+
+        // Setup drop zones
+        function setupDropZones() {
             document.querySelectorAll('.rank-column').forEach(column => {
-                column.addEventListener('dragover', (e) => {
+                // Remove old listeners by cloning
+                const newColumn = column.cloneNode(true);
+                column.parentNode.replaceChild(newColumn, column);
+                
+                newColumn.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    column.classList.add('drag-over');
+                    e.dataTransfer.dropEffect = 'move';
+                    newColumn.classList.add('drag-over');
                 });
                 
-                column.addEventListener('dragleave', () => {
-                    column.classList.remove('drag-over');
+                newColumn.addEventListener('dragleave', (e) => {
+                    // Only remove if actually leaving the column
+                    if (!newColumn.contains(e.relatedTarget)) {
+                        newColumn.classList.remove('drag-over');
+                    }
                 });
                 
-                column.addEventListener('drop', (e) => {
+                newColumn.addEventListener('drop', (e) => {
                     e.preventDefault();
-                    column.classList.remove('drag-over');
+                    newColumn.classList.remove('drag-over');
                     
-                    const rank = parseInt(column.dataset.rank);
+                    const rank = parseInt(newColumn.dataset.rank);
                     
                     if (draggedValue) {
-                        // Remove from other ranks
-                        for (let r = 1; r <= 3; r++) {
-                            if (rankedValues[r] && rankedValues[r].name === draggedValue.name && 
-                                Boolean(rankedValues[r].isCustom) === Boolean(draggedValue.isCustom)) {
-                                rankedValues[r] = null;
-                            }
-                        }
-                        
-                        rankedValues[rank] = draggedValue;
-                        updateRankingDisplay();
-                        updateButtonStates();
+                        placeValueInRank(draggedValue, rank);
+                        draggedValue = null;
+                    }
+                });
+                
+                // Click handler for click-to-place method
+                newColumn.addEventListener('click', (e) => {
+                    if (selectedForPlacement && !e.target.closest('.sorted-value')) {
+                        const rank = parseInt(newColumn.dataset.rank);
+                        placeValueInRank(selectedForPlacement, rank);
+                        selectedForPlacement = null;
+                        document.querySelectorAll('.value-card').forEach(c => c.classList.remove('ready-to-place'));
+                        document.querySelectorAll('.rank-column').forEach(c => c.classList.remove('awaiting-drop'));
                     }
                 });
             });
+        }
+
+        // Place value in rank
+        function placeValueInRank(value, rank) {
+            // Remove from other ranks if present
+            for (let r = 1; r <= 3; r++) {
+                if (rankedValues[r] && rankedValues[r].name === value.name && 
+                    Boolean(rankedValues[r].isCustom) === Boolean(value.isCustom)) {
+                    rankedValues[r] = null;
+                }
+            }
+            
+            rankedValues[rank] = value;
+            updateRankingDisplay();
+            updateButtonStates();
+        }
+
+        // Setup drag and drop (initial setup)
+        function setupDragAndDrop() {
+            // Global dragover handler
+            document.addEventListener('dragover', (e) => e.preventDefault());
         }
 
         // Update ranking display
@@ -1468,15 +1564,42 @@
                     sortedCard.innerHTML = `
                         <h4>${rankedValues[rank].name}${rankedValues[rank].isCustom ? ' ✨' : ''}</h4>
                         <p>${rankedValues[rank].description}</p>
+                        <small style="display: block; margin-top: 8px; color: var(--chapman-gold); font-weight: 600;">Click to remove</small>
                     `;
                     
-                    sortedCard.draggable = true;
+                    // Store value data
+                    sortedCard.dataset.valueName = rankedValues[rank].name;
+                    sortedCard.dataset.valueDesc = rankedValues[rank].description;
+                    sortedCard.dataset.isCustom = rankedValues[rank].isCustom ? 'true' : 'false';
+                    
+                    // Make draggable
+                    sortedCard.setAttribute('draggable', 'true');
                     sortedCard.addEventListener('dragstart', (e) => {
-                        draggedValue = rankedValues[rank];
+                        draggedValue = {
+                            name: sortedCard.dataset.valueName,
+                            description: sortedCard.dataset.valueDesc,
+                            isCustom: sortedCard.dataset.isCustom === 'true'
+                        };
                         rankedValues[rank] = null;
-                        e.target.style.opacity = '0.5';
+                        sortedCard.style.opacity = '0.5';
+                        e.dataTransfer.effectAllowed = 'move';
                     });
                     
+                    sortedCard.addEventListener('dragend', (e) => {
+                        e.target.style.opacity = '1';
+                        updateRankingDisplay();
+                        updateButtonStates();
+                    });
+                    
+                    // Click to remove
+                    sortedCard.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        rankedValues[rank] = null;
+                        updateRankingDisplay();
+                        updateButtonStates();
+                    });
+                    
+                    sortedCard.style.cursor = 'pointer';
                     column.appendChild(sortedCard);
                 }
             });
@@ -1485,7 +1608,7 @@
             const pool = document.getElementById('rankingPool');
             if (pool) {
                 pool.querySelectorAll('.value-card').forEach(card => {
-                    const cardTitle = card.querySelector('h3').textContent.replace(' ✨', '');
+                    const cardTitle = card.dataset.valueName;
                     const isRanked = Object.values(rankedValues).some(rv => rv && rv.name === cardTitle);
                     card.style.display = isRanked ? 'none' : 'block';
                 });

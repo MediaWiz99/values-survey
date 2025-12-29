@@ -983,24 +983,24 @@
 
                 <div class="ranking-instructions">
                     <h3>📱 How to Rank Your Values</h3>
-                    <p style="text-align: center; margin-bottom: 15px; color: var(--text-secondary);">Choose either method below:</p>
                     <div class="instruction-steps">
                         <div class="instruction-step">
-                            <div class="icon">🖱️</div>
-                            <strong>Method 1: Drag & Drop</strong><br>
-                            Click, hold, and drag a value card to a ranking box
+                            <div class="icon">1️⃣</div>
+                            <strong>Click a Value</strong><br>
+                            Select a value card from the pool below
                         </div>
                         <div class="instruction-step">
-                            <div class="icon">👆</div>
-                            <strong>Method 2: Click to Place</strong><br>
-                            Click a value card, then click a ranking box to place it
+                            <div class="icon">2️⃣</div>
+                            <strong>Click a Rank Box</strong><br>
+                            Click on rank #1, #2, or #3 to place it
                         </div>
                         <div class="instruction-step">
-                            <div class="icon">🎯</div>
-                            <strong>Goal</strong><br>
-                            Place your 3 most important values in order of priority
+                            <div class="icon">3️⃣</div>
+                            <strong>Repeat</strong><br>
+                            Fill all 3 rank positions with your top values
                         </div>
                     </div>
+                    <p style="text-align: center; margin-top: 15px; color: var(--text-secondary);">💡 To remove a ranked value, simply click on it.</p>
                 </div>
 
                 <div class="selection-notice">
@@ -1176,13 +1176,14 @@
         let customValues = [];
         let rankedValues = { 1: null, 2: null, 3: null };
         let studentInfo = {};
-        let draggedValue = null;
+        
+        // For click-to-place functionality
+        let selectedCardForPlacement = null;
 
         // Initialize
         function initSurvey() {
             document.getElementById('surveyDate').valueAsDate = new Date();
             populateValuesGrid();
-            setupDragAndDrop();
             updateProgress();
         }
 
@@ -1208,7 +1209,7 @@
             document.getElementById(`step${currentStep}`).classList.add('active');
             
             if (currentStep === 4) {
-                populateRankingPool();
+                setupRankingStep();
             }
             
             updateProgress();
@@ -1234,6 +1235,158 @@
                     step.classList.add('active');
                 } else if (stepNum < currentStep) {
                     step.classList.add('completed');
+                }
+            });
+        }
+
+        // ============================================
+        // RANKING STEP - SIMPLIFIED IMPLEMENTATION
+        // ============================================
+        
+        function setupRankingStep() {
+            // Reset any previous selections
+            selectedCardForPlacement = null;
+            
+            // Populate the pool with selected values
+            renderRankingPool();
+            
+            // Setup click handlers on rank columns
+            document.querySelectorAll('.rank-column').forEach(column => {
+                column.onclick = function(e) {
+                    // Don't trigger if clicking on a sorted value
+                    if (e.target.closest('.sorted-value')) return;
+                    
+                    const rank = parseInt(this.dataset.rank);
+                    
+                    if (selectedCardForPlacement) {
+                        placeValueInRank(selectedCardForPlacement, rank);
+                        clearSelection();
+                    }
+                };
+            });
+            
+            renderRankedValues();
+        }
+        
+        function renderRankingPool() {
+            const pool = document.getElementById('rankingPool');
+            pool.innerHTML = '';
+            
+            selectedValues.forEach((value, index) => {
+                // Check if already ranked
+                const isRanked = Object.values(rankedValues).some(rv => 
+                    rv && rv.name === value.name && Boolean(rv.isCustom) === Boolean(value.isCustom)
+                );
+                
+                if (isRanked) return; // Don't show ranked values in pool
+                
+                const card = document.createElement('div');
+                card.className = 'value-card';
+                if (value.isCustom) card.classList.add('custom');
+                card.dataset.index = index;
+                
+                card.innerHTML = `
+                    <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
+                    <p>${value.description}</p>
+                    <small style="display: block; margin-top: 10px; color: var(--chapman-gold); font-weight: 600;">Click to select, then click a rank</small>
+                `;
+                
+                card.onclick = function() {
+                    selectCardForPlacement(value, this);
+                };
+                
+                pool.appendChild(card);
+            });
+        }
+        
+        function selectCardForPlacement(value, cardElement) {
+            // If clicking the same card, deselect it
+            if (selectedCardForPlacement && selectedCardForPlacement.name === value.name) {
+                clearSelection();
+                return;
+            }
+            
+            // Clear previous selection
+            document.querySelectorAll('#rankingPool .value-card').forEach(c => {
+                c.classList.remove('ready-to-place');
+            });
+            
+            // Select this card
+            selectedCardForPlacement = value;
+            cardElement.classList.add('ready-to-place');
+            
+            // Highlight rank columns
+            document.querySelectorAll('.rank-column').forEach(col => {
+                col.classList.add('awaiting-drop');
+            });
+        }
+        
+        function clearSelection() {
+            selectedCardForPlacement = null;
+            document.querySelectorAll('#rankingPool .value-card').forEach(c => {
+                c.classList.remove('ready-to-place');
+            });
+            document.querySelectorAll('.rank-column').forEach(col => {
+                col.classList.remove('awaiting-drop');
+            });
+        }
+        
+        function placeValueInRank(value, rank) {
+            // Remove this value from any other rank it might be in
+            for (let r = 1; r <= 3; r++) {
+                if (rankedValues[r] && rankedValues[r].name === value.name && 
+                    Boolean(rankedValues[r].isCustom) === Boolean(value.isCustom)) {
+                    rankedValues[r] = null;
+                }
+            }
+            
+            // Place in the new rank
+            rankedValues[rank] = {
+                name: value.name,
+                description: value.description,
+                isCustom: value.isCustom || false
+            };
+            
+            // Re-render everything
+            renderRankingPool();
+            renderRankedValues();
+            updateButtonStates();
+        }
+        
+        function removeFromRank(rank) {
+            rankedValues[rank] = null;
+            renderRankingPool();
+            renderRankedValues();
+            updateButtonStates();
+        }
+        
+        function renderRankedValues() {
+            document.querySelectorAll('.rank-column').forEach(column => {
+                const rank = parseInt(column.dataset.rank);
+                
+                // Remove existing sorted value
+                const existing = column.querySelector('.sorted-value');
+                if (existing) existing.remove();
+                
+                // Add new sorted value if exists
+                if (rankedValues[rank]) {
+                    const value = rankedValues[rank];
+                    const sortedDiv = document.createElement('div');
+                    sortedDiv.className = 'sorted-value';
+                    if (value.isCustom) sortedDiv.classList.add('custom');
+                    
+                    sortedDiv.innerHTML = `
+                        <h4>${value.name}${value.isCustom ? ' ✨' : ''}</h4>
+                        <p>${value.description}</p>
+                        <small style="display: block; margin-top: 8px; color: var(--chapman-gold); font-weight: 600; cursor: pointer;">✕ Click to remove</small>
+                    `;
+                    
+                    sortedDiv.onclick = function(e) {
+                        e.stopPropagation();
+                        removeFromRank(rank);
+                    };
+                    
+                    column.appendChild(sortedDiv);
                 }
             });
         }
@@ -1308,7 +1461,9 @@
         // Update button states
         function updateButtonStates() {
             const continueBtn = document.getElementById('continueBtn');
-            continueBtn.disabled = selectedValues.length < 3;
+            if (continueBtn) {
+                continueBtn.disabled = selectedValues.length < 3;
+            }
             
             const resultsBtn = document.getElementById('resultsBtn');
             if (resultsBtn) {
@@ -1401,218 +1556,6 @@
             populateValuesGrid();
             updateSelectionCounter();
             updateButtonStates();
-        }
-
-        // Populate ranking pool
-        function populateRankingPool() {
-            const pool = document.getElementById('rankingPool');
-            pool.innerHTML = '';
-            
-            selectedValues.forEach(value => {
-                const card = document.createElement('div');
-                card.className = 'value-card';
-                card.setAttribute('draggable', 'true');
-                if (value.isCustom) card.classList.add('custom');
-                
-                // Store value data on the element
-                card.dataset.valueName = value.name;
-                card.dataset.valueDesc = value.description;
-                card.dataset.isCustom = value.isCustom ? 'true' : 'false';
-                
-                card.innerHTML = `
-                    <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
-                    <p>${value.description}</p>
-                `;
-                
-                // Add drag events
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
-                
-                // Add click-to-select as alternative to drag
-                card.addEventListener('click', () => handleCardClick(value));
-                
-                pool.appendChild(card);
-            });
-            
-            // Re-setup drop zones
-            setupDropZones();
-            updateRankingDisplay();
-        }
-
-        // Selected value for click-to-place method
-        let selectedForPlacement = null;
-
-        // Handle card click (alternative to drag)
-        function handleCardClick(value) {
-            // If already selected, deselect
-            if (selectedForPlacement && selectedForPlacement.name === value.name) {
-                selectedForPlacement = null;
-                document.querySelectorAll('.value-card').forEach(c => c.classList.remove('ready-to-place'));
-                document.querySelectorAll('.rank-column').forEach(c => c.classList.remove('awaiting-drop'));
-                return;
-            }
-            
-            // Select this card
-            selectedForPlacement = value;
-            
-            // Visual feedback
-            document.querySelectorAll('.value-card').forEach(c => c.classList.remove('ready-to-place'));
-            const clickedCard = document.querySelector(`.value-card[data-value-name="${value.name}"]`);
-            if (clickedCard) clickedCard.classList.add('ready-to-place');
-            
-            // Highlight drop zones
-            document.querySelectorAll('.rank-column').forEach(c => c.classList.add('awaiting-drop'));
-        }
-
-        // Handle drag start
-        function handleDragStart(e) {
-            const card = e.target.closest('.value-card') || e.target;
-            draggedValue = {
-                name: card.dataset.valueName,
-                description: card.dataset.valueDesc,
-                isCustom: card.dataset.isCustom === 'true'
-            };
-            card.style.opacity = '0.5';
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', card.dataset.valueName);
-        }
-
-        // Handle drag end
-        function handleDragEnd(e) {
-            e.target.style.opacity = '1';
-            document.querySelectorAll('.rank-column').forEach(col => col.classList.remove('drag-over'));
-        }
-
-        // Setup drop zones
-        function setupDropZones() {
-            document.querySelectorAll('.rank-column').forEach(column => {
-                // Remove old listeners by cloning
-                const newColumn = column.cloneNode(true);
-                column.parentNode.replaceChild(newColumn, column);
-                
-                newColumn.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.dataTransfer.dropEffect = 'move';
-                    newColumn.classList.add('drag-over');
-                });
-                
-                newColumn.addEventListener('dragleave', (e) => {
-                    // Only remove if actually leaving the column
-                    if (!newColumn.contains(e.relatedTarget)) {
-                        newColumn.classList.remove('drag-over');
-                    }
-                });
-                
-                newColumn.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    newColumn.classList.remove('drag-over');
-                    
-                    const rank = parseInt(newColumn.dataset.rank);
-                    
-                    if (draggedValue) {
-                        placeValueInRank(draggedValue, rank);
-                        draggedValue = null;
-                    }
-                });
-                
-                // Click handler for click-to-place method
-                newColumn.addEventListener('click', (e) => {
-                    if (selectedForPlacement && !e.target.closest('.sorted-value')) {
-                        const rank = parseInt(newColumn.dataset.rank);
-                        placeValueInRank(selectedForPlacement, rank);
-                        selectedForPlacement = null;
-                        document.querySelectorAll('.value-card').forEach(c => c.classList.remove('ready-to-place'));
-                        document.querySelectorAll('.rank-column').forEach(c => c.classList.remove('awaiting-drop'));
-                    }
-                });
-            });
-        }
-
-        // Place value in rank
-        function placeValueInRank(value, rank) {
-            // Remove from other ranks if present
-            for (let r = 1; r <= 3; r++) {
-                if (rankedValues[r] && rankedValues[r].name === value.name && 
-                    Boolean(rankedValues[r].isCustom) === Boolean(value.isCustom)) {
-                    rankedValues[r] = null;
-                }
-            }
-            
-            rankedValues[rank] = value;
-            updateRankingDisplay();
-            updateButtonStates();
-        }
-
-        // Setup drag and drop (initial setup)
-        function setupDragAndDrop() {
-            // Global dragover handler
-            document.addEventListener('dragover', (e) => e.preventDefault());
-        }
-
-        // Update ranking display
-        function updateRankingDisplay() {
-            document.querySelectorAll('.rank-column').forEach(column => {
-                const rank = parseInt(column.dataset.rank);
-                const existingSorted = column.querySelector('.sorted-value');
-                if (existingSorted) existingSorted.remove();
-                
-                if (rankedValues[rank]) {
-                    const sortedCard = document.createElement('div');
-                    sortedCard.className = 'sorted-value';
-                    if (rankedValues[rank].isCustom) sortedCard.classList.add('custom');
-                    
-                    sortedCard.innerHTML = `
-                        <h4>${rankedValues[rank].name}${rankedValues[rank].isCustom ? ' ✨' : ''}</h4>
-                        <p>${rankedValues[rank].description}</p>
-                        <small style="display: block; margin-top: 8px; color: var(--chapman-gold); font-weight: 600;">Click to remove</small>
-                    `;
-                    
-                    // Store value data
-                    sortedCard.dataset.valueName = rankedValues[rank].name;
-                    sortedCard.dataset.valueDesc = rankedValues[rank].description;
-                    sortedCard.dataset.isCustom = rankedValues[rank].isCustom ? 'true' : 'false';
-                    
-                    // Make draggable
-                    sortedCard.setAttribute('draggable', 'true');
-                    sortedCard.addEventListener('dragstart', (e) => {
-                        draggedValue = {
-                            name: sortedCard.dataset.valueName,
-                            description: sortedCard.dataset.valueDesc,
-                            isCustom: sortedCard.dataset.isCustom === 'true'
-                        };
-                        rankedValues[rank] = null;
-                        sortedCard.style.opacity = '0.5';
-                        e.dataTransfer.effectAllowed = 'move';
-                    });
-                    
-                    sortedCard.addEventListener('dragend', (e) => {
-                        e.target.style.opacity = '1';
-                        updateRankingDisplay();
-                        updateButtonStates();
-                    });
-                    
-                    // Click to remove
-                    sortedCard.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        rankedValues[rank] = null;
-                        updateRankingDisplay();
-                        updateButtonStates();
-                    });
-                    
-                    sortedCard.style.cursor = 'pointer';
-                    column.appendChild(sortedCard);
-                }
-            });
-            
-            // Update pool visibility
-            const pool = document.getElementById('rankingPool');
-            if (pool) {
-                pool.querySelectorAll('.value-card').forEach(card => {
-                    const cardTitle = card.dataset.valueName;
-                    const isRanked = Object.values(rankedValues).some(rv => rv && rv.name === cardTitle);
-                    card.style.display = isRanked ? 'none' : 'block';
-                });
-            }
         }
 
         // Show results

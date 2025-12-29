@@ -3,55 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Values Discovery Survey</title>
+    <title>Values Discovery Assessment | Chapman University</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        :root {
+            --chapman-blue: #00205B;
+            --chapman-gold: #C4A000;
+            --gold-light: #F5E6A3;
+            --blue-light: #E8EDF5;
+            --blue-medium: #1A3A7A;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a5a;
+            --white: #ffffff;
+            --success: #2E7D32;
+            --success-light: #E8F5E9;
+            --shadow-subtle: 0 2px 8px rgba(0, 32, 91, 0.08);
+            --shadow-medium: 0 4px 20px rgba(0, 32, 91, 0.12);
+            --shadow-strong: 0 8px 32px rgba(0, 32, 91, 0.18);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 50%, var(--chapman-blue) 100%);
             min-height: 100vh;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-strong);
             overflow: hidden;
         }
 
+        /* Header */
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: white;
-            padding: 40px;
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 100%);
+            color: var(--white);
+            padding: 40px 30px;
             text-align: center;
+            position: relative;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 300;
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--chapman-gold) 0%, var(--gold-light) 50%, var(--chapman-gold) 100%);
         }
 
-        .content {
-            padding: 40px;
+        .institution {
+            font-size: 0.95em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 500;
         }
 
-        .section {
-            margin-bottom: 40px;
-            padding: 30px;
-            background: #f8f9ff;
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
+        .college {
+            font-size: 1.1em;
+            color: var(--chapman-gold);
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        .form-row {
+        h1 {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.15em;
+            font-style: italic;
+            opacity: 0.95;
+            color: var(--gold-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 35px;
+        }
+
+        /* Progress */
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            opacity: 1;
+            color: var(--chapman-blue);
+            font-weight: 600;
+        }
+
+        .progress-step.completed {
+            opacity: 1;
+            color: var(--success);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85em;
+        }
+
+        .progress-step.active .step-number {
+            background: var(--chapman-blue);
+            color: var(--white);
+        }
+
+        .progress-step.completed .step-number {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e8ecf0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--chapman-blue) 0%, var(--chapman-gold) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Steps */
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Instructions Box */
+        .instructions {
+            background: linear-gradient(135deg, var(--blue-light) 0%, #f8f9fc 100%);
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 28px;
+            border-left: 5px solid var(--chapman-blue);
+        }
+
+        .instructions h2 {
+            color: var(--chapman-blue);
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .instructions p, .instructions li {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 15px;
+        }
+
+        .instructions li {
+            margin-bottom: 12px;
+        }
+
+        /* Student Info */
+        .student-info {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
             margin-bottom: 30px;
         }
 
@@ -61,30 +228,64 @@
         }
 
         .form-group label {
-            color: #2c3e50;
             font-weight: 600;
             margin-bottom: 8px;
+            color: var(--chapman-blue);
+            font-size: 0.95em;
         }
 
         .form-group input {
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 14px 16px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
         }
 
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--chapman-blue);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(0, 32, 91, 0.08);
+        }
+
+        /* Selection Counter */
+        .selection-counter {
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 100%);
+            color: var(--white);
+            padding: 18px 28px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 25px 0;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .selection-notice {
+            background: linear-gradient(135deg, #fffef8 0%, #fef9e7 100%);
+            border: 2px solid var(--chapman-gold);
+            border-radius: 12px;
+            padding: 18px;
+            margin: 18px 0;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Values Grid */
         .values-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
             margin-bottom: 30px;
         }
 
         .value-card {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 20px;
+            background: var(--white);
+            border: 2px solid #e8ecf0;
+            border-radius: 14px;
+            padding: 22px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -92,279 +293,772 @@
         }
 
         .value-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+            border-color: var(--chapman-blue);
         }
 
         .value-card.selected {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-color: #667eea;
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 100%);
+            color: var(--white);
+            border-color: var(--chapman-blue);
+            transform: scale(1.02);
         }
 
         .value-card.custom {
-            border-color: #28a745;
+            border-color: var(--success);
         }
 
         .value-card.custom.selected {
-            background: linear-gradient(135deg, #28a745, #20c997);
+            background: linear-gradient(135deg, var(--success) 0%, #43A047 100%);
+            border-color: var(--success);
         }
 
         .value-card h3 {
-            font-size: 1.2rem;
+            font-size: 1.15em;
             margin-bottom: 8px;
             font-weight: 600;
         }
 
         .value-card p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            line-height: 1.4;
+            font-size: 0.9em;
+            opacity: 0.85;
+            line-height: 1.5;
         }
 
-        .counter {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 25px;
-            text-align: center;
-            margin: 20px 0;
-            font-weight: 600;
-            font-size: 1.1rem;
+        /* Custom Value Section */
+        .custom-value-section {
+            margin-top: 35px;
+            background: linear-gradient(135deg, var(--blue-light) 0%, #f8f9fc 100%);
+            padding: 28px;
+            border-radius: 14px;
+            border-left: 5px solid var(--chapman-gold);
         }
 
-        .custom-section {
-            background: #f0f8ff;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+        .custom-value-section h3 {
+            color: var(--chapman-blue);
+            margin-bottom: 12px;
         }
 
-        .custom-row {
+        .custom-value-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .custom-input-row {
             display: grid;
-            grid-template-columns: 1fr 1fr auto;
+            grid-template-columns: 1fr 1.5fr auto;
             gap: 15px;
             align-items: end;
         }
 
-        .ranking-section {
-            background: #fff8f0;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 30px 0;
-        }
-
-        .ranking-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+        .custom-values-display {
             margin-top: 20px;
         }
 
-        .rank-box {
-            background: white;
-            border: 3px dashed #ddd;
-            border-radius: 15px;
-            padding: 20px;
+        .custom-value-tag {
+            display: inline-block;
+            background: var(--white);
+            border: 2px solid var(--success);
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin: 6px;
+            position: relative;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            line-height: 1;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
+        }
+
+        /* Ranking Area */
+        .sorting-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .rank-column {
+            background: linear-gradient(135deg, var(--blue-light) 0%, #f5f7fa 100%);
+            border-radius: 16px;
+            padding: 25px;
+            min-height: 220px;
+            border: 3px dashed #ccd5e0;
             text-align: center;
-            min-height: 150px;
             transition: all 0.3s ease;
         }
 
-        .rank-box.has-value {
-            border-color: #667eea;
-            background: #f8f9ff;
+        .rank-column.drag-over {
+            border-color: var(--chapman-blue);
+            background: linear-gradient(135deg, #d4e4f7 0%, #e8f0fa 100%);
+            transform: scale(1.02);
+            border-style: solid;
         }
 
         .rank-number {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            width: 40px;
-            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 100%);
+            color: var(--white);
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            line-height: 40px;
-            font-weight: bold;
-            margin: 0 auto 10px;
+            font-weight: 700;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-medium);
         }
 
-        .btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
+        .rank-column h3 {
+            color: var(--chapman-blue);
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .rank-column > p {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .sorted-value {
+            background: var(--white);
+            border: 2px solid var(--chapman-blue);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px 0;
+            cursor: move;
             transition: all 0.3s ease;
-            margin: 10px;
+            box-shadow: var(--shadow-subtle);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        .sorted-value:hover {
+            box-shadow: var(--shadow-medium);
+        }
+
+        .sorted-value.custom {
+            border-color: var(--success);
+        }
+
+        .sorted-value h4 {
+            color: var(--chapman-blue);
+            margin-bottom: 5px;
+        }
+
+        .sorted-value.custom h4 {
+            color: var(--success);
+        }
+
+        .sorted-value p {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        /* Ranking Instructions */
+        .ranking-instructions {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%);
+            border: 3px solid var(--chapman-blue);
+            border-radius: 16px;
+            padding: 28px;
+            margin: 25px 0;
+        }
+
+        .ranking-instructions h3 {
+            color: var(--chapman-blue);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .instruction-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+        }
+
+        .instruction-step {
+            background: var(--white);
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--chapman-blue);
+        }
+
+        .instruction-step .icon {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 16px 35px;
+            font-size: 1.05em;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(0, 32, 91, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 32, 91, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--chapman-gold) 0%, #d4b000 100%);
+            color: var(--chapman-blue);
+            box-shadow: 0 4px 15px rgba(196, 160, 0, 0.3);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(196, 160, 0, 0.4);
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
         }
 
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 35px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f2f5;
+        }
+
+        /* Results */
         .results {
-            background: #f0fff0;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 30px 0;
-            display: none;
+            background: linear-gradient(135deg, var(--blue-light) 0%, #f8f9fc 100%);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
         }
 
-        .results.show {
-            display: block;
+        .results h2 {
+            color: var(--chapman-blue);
+            font-size: 1.8em;
+            margin-bottom: 12px;
+        }
+
+        .results > p {
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            margin-bottom: 35px;
         }
 
         .top-values {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin: 20px 0;
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
         .top-value {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-value::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--chapman-gold) 100%);
+        }
+
+        .top-value.custom::before {
+            background: linear-gradient(135deg, var(--success) 0%, #43A047 100%);
         }
 
         .value-rank {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--chapman-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .top-value h3 {
+            color: var(--chapman-blue);
+            font-size: 1.3em;
             margin-bottom: 10px;
         }
 
+        .top-value.custom h3 {
+            color: var(--success);
+        }
+
+        .top-value p {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* All Values Summary */
+        .all-values-summary {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 28px;
+            margin-top: 30px;
+            text-align: left;
+            border: 2px solid var(--chapman-gold);
+        }
+
+        .all-values-summary h3 {
+            color: var(--chapman-blue);
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .values-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .value-item {
+            background: var(--blue-light);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--chapman-blue);
+        }
+
+        .value-item.custom {
+            border-left-color: var(--success);
+            background: var(--success-light);
+        }
+
+        .value-item.ranked {
+            border-left-color: var(--chapman-gold);
+        }
+
+        .value-item h4 {
+            color: var(--chapman-blue);
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .value-item.custom h4 {
+            color: var(--success);
+        }
+
+        .value-item p {
+            color: var(--text-secondary);
+            font-size: 0.85em;
+        }
+
+        .value-item .rank-badge {
+            display: inline-block;
+            background: var(--chapman-gold);
+            color: var(--chapman-blue);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        /* Reflection Section */
+        .reflection-section {
+            background: linear-gradient(135deg, #fffef8 0%, #fef9e7 100%);
+            border: 2px solid var(--chapman-gold);
+            border-radius: 14px;
+            padding: 28px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .reflection-section h3 {
+            color: var(--chapman-blue);
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .reflection-questions {
+            counter-reset: reflection;
+        }
+
+        .reflection-question {
+            padding: 16px 18px 16px 50px;
+            position: relative;
+            background: var(--white);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-subtle);
+            color: var(--text-secondary);
+        }
+
+        .reflection-question::before {
+            counter-increment: reflection;
+            content: counter(reflection);
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            background: var(--chapman-blue);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: 700;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 32, 91, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 35px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-strong);
+            animation: modalPop 0.3s ease-out;
+        }
+
+        .modal h3 {
+            color: var(--chapman-blue);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal button {
+            background: linear-gradient(135deg, var(--chapman-blue) 0%, var(--blue-medium) 100%);
+            color: var(--white);
+            border: none;
+            padding: 14px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            border-top: 1px solid #e8ecf0;
+            margin-top: 30px;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
             .values-grid { grid-template-columns: 1fr; }
-            .ranking-grid { grid-template-columns: 1fr; }
+            .sorting-area { grid-template-columns: 1fr; }
             .top-values { grid-template-columns: 1fr; }
-            .custom-row { grid-template-columns: 1fr; }
+            .custom-input-row { grid-template-columns: 1fr; }
+            .instruction-steps { grid-template-columns: 1fr; }
+            .progress-steps { display: none; }
+            h1 { font-size: 1.8em; }
+            .main-content { padding: 20px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Values Discovery Survey</h1>
-            <p>Discover your core values through this interactive assessment</p>
+            <div class="institution">Chapman University</div>
+            <div class="college">Argyros College of Business and Economics</div>
+            <h1>Values Discovery Assessment</h1>
+            <div class="subtitle">Understanding your core values helps guide important life and career decisions</div>
         </div>
 
-        <div class="content">
-            <!-- Student Information -->
-            <div class="section">
-                <h2>Student Information</h2>
-                <div class="form-row">
+        <div class="main-content">
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <span>Information</span>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <span>Instructions</span>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <span>Select Values</span>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <span>Rank Top 3</span>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-number">5</div>
+                        <span>Results</span>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Step 1: Student Information -->
+            <div class="step active" id="step1">
+                <div class="instructions">
+                    <h2>📋 Welcome to the Values Discovery Assessment</h2>
+                    <p>Values are the fundamental beliefs and principles that guide our decisions, shape our behavior, and define what matters most to us. This assessment will help you identify and prioritize your core values—a crucial foundation for effective leadership and meaningful career choices.</p>
+                    <p style="margin-top: 15px;">Understanding your values enables you to make decisions aligned with your authentic self, build stronger relationships, and navigate complex ethical situations with clarity.</p>
+                </div>
+                
+                <div class="student-info">
                     <div class="form-group">
-                        <label for="studentName">Full Name</label>
+                        <label for="studentName">Your Full Name</label>
                         <input type="text" id="studentName" placeholder="Enter your full name">
                     </div>
                     <div class="form-group">
-                        <label for="surveyDate">Date</label>
+                        <label for="surveyDate">Assessment Date</label>
                         <input type="date" id="surveyDate">
                     </div>
                 </div>
+
+                <div class="step-navigation">
+                    <div></div>
+                    <button class="btn btn-primary" onclick="nextStep()">Begin Assessment →</button>
+                </div>
             </div>
 
-            <!-- Instructions -->
-            <div class="section">
-                <h2>How This Works</h2>
-                <ol>
-                    <li>Select up to 6 values that resonate with you</li>
-                    <li>Add custom values if needed</li>
-                    <li>Choose your top 3 most important values</li>
-                    <li>Generate your personalized PDF report</li>
-                </ol>
-            </div>
-
-            <!-- Value Selection -->
-            <div class="section">
-                <h2>Step 1: Choose Your Values (Select up to 6)</h2>
-                <div class="counter" id="counter">🎯 Select up to 6 values that resonate with you</div>
-                
-                <div class="values-grid" id="valuesGrid">
-                    <!-- Values will be populated here -->
+            <!-- Step 2: Instructions -->
+            <div class="step" id="step2">
+                <div class="instructions">
+                    <h2>📌 How This Assessment Works</h2>
+                    <ol>
+                        <li><strong>Select Your Values:</strong> You'll choose up to 6 values from a comprehensive list of 91 core values that resonate most strongly with who you are.</li>
+                        <li><strong>Add Custom Values:</strong> If something important to you isn't listed, you can create your own custom values to include in your selection.</li>
+                        <li><strong>Rank Your Top 3:</strong> From your selected values, you'll prioritize your top 3 in order of importance—the principles that should guide your most significant decisions.</li>
+                        <li><strong>Receive Your Results:</strong> Get a personalized report of your core values that you can download as a professional PDF document.</li>
+                    </ol>
                 </div>
 
-                <!-- Custom Value Section -->
-                <div class="custom-section">
-                    <h3>Add Your Own Value</h3>
-                    <div class="custom-row">
+                <div class="selection-notice">
+                    💡 <strong>Tip:</strong> Trust your instincts. Choose values that feel genuinely important to who you are—not what you think others expect of you.
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Start Selecting Values →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Value Selection -->
+            <div class="step" id="step3">
+                <div class="instructions">
+                    <h2>Step 1: Choose Your Values</h2>
+                    <p>Click on up to 6 values that resonate most deeply with you. These should reflect who you truly are and what matters most in your life.</p>
+                </div>
+
+                <div class="selection-notice">
+                    📌 <strong>Selection Limit:</strong> You may select a maximum of 6 values. To choose a different value, first deselect one of your current choices.
+                </div>
+
+                <div class="selection-counter" id="selectionCounter">🎯 Select up to 6 values that resonate with you</div>
+
+                <div class="values-grid" id="valuesGrid"></div>
+
+                <div class="custom-value-section">
+                    <h3>✨ Add Your Own Value</h3>
+                    <p>Don't see something that's important to you? Create your own custom value below.</p>
+                    
+                    <div class="custom-input-row">
                         <div class="form-group">
-                            <label for="customName">Value Name</label>
-                            <input type="text" id="customName" placeholder="e.g., Innovation" maxlength="20">
+                            <label for="customValueName">Value Name</label>
+                            <input type="text" id="customValueName" placeholder="e.g., Innovation" maxlength="25">
                         </div>
                         <div class="form-group">
-                            <label for="customDesc">Description</label>
-                            <input type="text" id="customDesc" placeholder="What this means to you" maxlength="80">
+                            <label for="customValueDescription">Description</label>
+                            <input type="text" id="customValueDescription" placeholder="What this value means to you" maxlength="100">
                         </div>
-                        <button class="btn" onclick="addCustomValue()" style="margin: 0;">Add Value</button>
+                        <button class="btn btn-gold" onclick="addCustomValue()">Add Value</button>
                     </div>
-                    <div id="customDisplay"></div>
+                    
+                    <div class="custom-values-display" id="customValuesDisplay"></div>
+                </div>
+
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()" id="continueBtn" disabled>Continue with Selected Values →</button>
                 </div>
             </div>
 
-            <!-- Ranking Section -->
-            <div class="ranking-section">
-                <h2>Step 2: Choose Your Top 3 Values</h2>
-                <p>Click on 3 of your selected values below to rank them as your top priorities:</p>
-                
-                <div class="values-grid" id="selectedGrid">
-                    <!-- Selected values appear here -->
+            <!-- Step 4: Ranking -->
+            <div class="step" id="step4">
+                <div class="instructions">
+                    <h2>Step 2: Rank Your Top 3 Values</h2>
+                    <p>Now prioritize which of your selected values matter most. Your top 3 values should be the principles that guide your most important life and career decisions.</p>
                 </div>
 
-                <div class="ranking-grid">
-                    <div class="rank-box" id="rank1">
+                <div class="ranking-instructions">
+                    <h3>📱 How to Rank Your Values</h3>
+                    <div class="instruction-steps">
+                        <div class="instruction-step">
+                            <div class="icon">👆</div>
+                            <strong>Step 1</strong><br>
+                            Click and hold a value card below
+                        </div>
+                        <div class="instruction-step">
+                            <div class="icon">🫴</div>
+                            <strong>Step 2</strong><br>
+                            Drag it to a ranking box
+                        </div>
+                        <div class="instruction-step">
+                            <div class="icon">🎯</div>
+                            <strong>Step 3</strong><br>
+                            Drop it in your chosen rank
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selection-notice">
+                    💡 <strong>Think carefully:</strong> Which values would guide your most important life decisions? What principles would you never want to compromise?
+                </div>
+
+                <h3 style="color: var(--chapman-blue); margin: 25px 0 15px; text-align: center;">Your Selected Values — Drag to Rank:</h3>
+                <div class="values-grid" id="rankingPool"></div>
+
+                <h3 style="color: var(--chapman-blue); margin: 30px 0 15px; text-align: center;">Drop Values Here to Rank Them:</h3>
+                <div class="sorting-area">
+                    <div class="rank-column" data-rank="1">
                         <div class="rank-number">1</div>
                         <h3>Most Important</h3>
-                        <p>Click a value above to place it here</p>
-                        <div id="value1"></div>
+                        <p>Your highest priority value</p>
                     </div>
-                    <div class="rank-box" id="rank2">
+                    <div class="rank-column" data-rank="2">
                         <div class="rank-number">2</div>
                         <h3>Second Most Important</h3>
-                        <p>Click a value above to place it here</p>
-                        <div id="value2"></div>
+                        <p>Your second priority value</p>
                     </div>
-                    <div class="rank-box" id="rank3">
+                    <div class="rank-column" data-rank="3">
                         <div class="rank-number">3</div>
                         <h3>Third Most Important</h3>
-                        <p>Click a value above to place it here</p>
-                        <div id="value3"></div>
+                        <p>Your third priority value</p>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 20px;">
-                    <button class="btn" onclick="showResults()" id="resultsBtn" disabled>View My Results</button>
+                <div class="step-navigation">
+                    <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                    <button class="btn btn-primary" onclick="showResults()" id="resultsBtn" disabled>View My Results →</button>
                 </div>
             </div>
 
-            <!-- Results -->
-            <div class="results" id="results">
-                <h2>Your Top 3 Values</h2>
-                <div class="top-values" id="topValues"></div>
-                <div style="text-align: center; margin-top: 30px;">
-                    <button class="btn" onclick="generatePDF()">Generate PDF Report</button>
-                    <button class="btn" onclick="resetSurvey()" style="background: #6c757d;">Start Over</button>
+            <!-- Step 5: Results -->
+            <div class="step" id="step5">
+                <div class="results">
+                    <h2>🎯 Your Core Values</h2>
+                    <p>These are your top 3 values—the principles that should guide your most important decisions.</p>
+                    
+                    <div class="top-values" id="topValues"></div>
+
+                    <div class="all-values-summary">
+                        <h3>📋 All Your Selected Values</h3>
+                        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">These are all the values you identified as important. Keep this record to track how your values may evolve over time.</p>
+                        <div class="values-list" id="allValuesList"></div>
+                    </div>
+
+                    <div class="reflection-section">
+                        <h3>🤔 Reflection Questions</h3>
+                        <div class="reflection-questions">
+                            <div class="reflection-question">How do your top 3 values currently show up in your daily life and decisions?</div>
+                            <div class="reflection-question">Can you recall a time when one of your core values was challenged? How did you respond?</div>
+                            <div class="reflection-question">How might your values influence the type of organization or career you pursue?</div>
+                            <div class="reflection-question">Are there any values you aspire to that aren't yet fully reflected in your behavior?</div>
+                            <div class="reflection-question">How might understanding your values help you navigate ethical dilemmas at work?</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 40px;">
+                        <button class="btn btn-gold" onclick="generatePDF()">📄 Download Professional PDF Report</button>
+                        <button class="btn btn-secondary" onclick="resetSurvey()" style="margin-left: 15px;">Take Assessment Again</button>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="footer">
+            <p>Values Discovery Assessment • Chapman University • Argyros College of Business and Economics</p>
+            <p style="margin-top: 8px; font-size: 0.85em;">© 2024 Professor Chip Lusko • MGMT 316: Management in Organizations</p>
+        </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
-        // Complete list of all 91 values
+        // All 91 values
         const values = [
             { name: "Achievement", description: "Accomplishing goals, succeeding, and reaching your potential" },
             { name: "Adaptability", description: "Being flexible and adjusting well to changing circumstances" },
@@ -456,45 +1150,98 @@
             { name: "Truth", description: "Seeking and upholding what is honest, genuine, and real" },
             { name: "Trustworthiness", description: "Being reliable and deserving of others' confidence" },
             { name: "Understanding", description: "Seeking to comprehend others and complex situations deeply" },
-            { name: "Uniqueness", description: "Embracing what makes you distinct and individual" },
-            { name: "Vision", description: "Having a clear picture of future possibilities and goals" },
-            { name: "Vulnerability", description: "Being open about your feelings and authentic in relationships" },
-            { name: "Wealth", description: "Accumulating financial resources and material prosperity" },
-            { name: "Wisdom", description: "Applying knowledge and experience to make sound decisions" }
+            { name: "Wealth", description: "Accumulating financial resources and material prosperity" }
         ];
 
+        let currentStep = 1;
         let selectedValues = [];
         let customValues = [];
-        let topThree = [null, null, null];
+        let rankedValues = { 1: null, 2: null, 3: null };
         let studentInfo = {};
+        let draggedValue = null;
 
-        // Initialize survey
-        function init() {
-            document.getElementById('surveyDate').value = new Date().toISOString().split('T')[0];
-            populateGrid();
+        // Initialize
+        function initSurvey() {
+            document.getElementById('surveyDate').valueAsDate = new Date();
+            populateValuesGrid();
+            setupDragAndDrop();
+            updateProgress();
+        }
+
+        // Navigation
+        function nextStep() {
+            if (currentStep === 1) {
+                const name = document.getElementById('studentName').value.trim();
+                const date = document.getElementById('surveyDate').value;
+                if (!name) {
+                    showModal('⚠️ Name Required', 'Please enter your full name to continue.');
+                    return;
+                }
+                studentInfo = { name, date };
+            }
+            
+            if (currentStep === 3 && selectedValues.length < 3) {
+                showModal('⚠️ More Values Needed', 'Please select at least 3 values to continue to the ranking step.');
+                return;
+            }
+
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            if (currentStep === 4) {
+                populateRankingPool();
+            }
+            
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / 4) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                const stepNum = index + 1;
+                step.classList.remove('active', 'completed');
+                if (stepNum === currentStep) {
+                    step.classList.add('active');
+                } else if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
         }
 
         // Populate values grid
-        function populateGrid() {
+        function populateValuesGrid() {
             const grid = document.getElementById('valuesGrid');
             grid.innerHTML = '';
-
+            
             const allValues = [...values, ...customValues];
-            allValues.sort(() => Math.random() - 0.5);
-
+            
             allValues.forEach(value => {
                 const card = document.createElement('div');
                 card.className = 'value-card';
                 if (value.isCustom) card.classList.add('custom');
                 
-                const isSelected = selectedValues.some(v => v.name === value.name && Boolean(v.isCustom) === Boolean(value.isCustom));
+                const isSelected = selectedValues.some(v => 
+                    v.name === value.name && Boolean(v.isCustom) === Boolean(value.isCustom)
+                );
                 if (isSelected) card.classList.add('selected');
-
+                
                 card.innerHTML = `
                     <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
                     <p>${value.description}</p>
                 `;
-
+                
                 card.onclick = () => toggleValue(card, value);
                 grid.appendChild(card);
             });
@@ -502,327 +1249,509 @@
 
         // Toggle value selection
         function toggleValue(card, value) {
-            const isSelected = selectedValues.some(v => v.name === value.name && Boolean(v.isCustom) === Boolean(value.isCustom));
-
+            const isSelected = selectedValues.some(v => 
+                v.name === value.name && Boolean(v.isCustom) === Boolean(value.isCustom)
+            );
+            
             if (isSelected) {
-                selectedValues = selectedValues.filter(v => !(v.name === value.name && Boolean(v.isCustom) === Boolean(value.isCustom)));
+                selectedValues = selectedValues.filter(v => 
+                    !(v.name === value.name && Boolean(v.isCustom) === Boolean(value.isCustom))
+                );
                 card.classList.remove('selected');
             } else {
                 if (selectedValues.length >= 6) {
-                    alert('You can only select up to 6 values. Please deselect one first.');
+                    showModal('🚫 Selection Limit Reached', 'You can only select up to 6 values. Please deselect a value first if you\'d like to choose a different one.');
                     return;
                 }
                 selectedValues.push(value);
                 card.classList.add('selected');
             }
+            
+            updateSelectionCounter();
+            updateButtonStates();
+        }
 
-            updateCounter();
-            updateSelectedGrid();
+        // Update selection counter
+        function updateSelectionCounter() {
+            const counter = document.getElementById('selectionCounter');
+            const count = selectedValues.length;
+            
+            if (count === 0) {
+                counter.textContent = '🎯 Select up to 6 values that resonate with you';
+            } else if (count < 3) {
+                counter.textContent = `🎯 ${count} of 6 values selected — select at least ${3 - count} more to continue`;
+            } else if (count < 6) {
+                counter.textContent = `✅ ${count} of 6 values selected — you can select ${6 - count} more or continue`;
+            } else {
+                counter.textContent = '✅ 6 values selected — maximum reached!';
+            }
+        }
+
+        // Update button states
+        function updateButtonStates() {
+            const continueBtn = document.getElementById('continueBtn');
+            continueBtn.disabled = selectedValues.length < 3;
+            
+            const resultsBtn = document.getElementById('resultsBtn');
+            if (resultsBtn) {
+                resultsBtn.disabled = !(rankedValues[1] && rankedValues[2] && rankedValues[3]);
+            }
         }
 
         // Add custom value
         function addCustomValue() {
-            const name = document.getElementById('customName').value.trim();
-            const description = document.getElementById('customDesc').value.trim();
-
+            const nameInput = document.getElementById('customValueName');
+            const descInput = document.getElementById('customValueDescription');
+            
+            const name = nameInput.value.trim();
+            const description = descInput.value.trim();
+            
             if (!name || !description) {
-                alert('Please provide both a name and description.');
+                showModal('⚠️ Missing Information', 'Please provide both a name and description for your custom value.');
                 return;
             }
-
+            
             if (selectedValues.length >= 6) {
-                alert('You already have 6 values selected. Please deselect one first.');
+                showModal('🚫 Selection Limit Reached', 'You have already selected 6 values. Please deselect one before adding a custom value.');
                 return;
             }
-
+            
+            const allValues = [...values, ...customValues];
+            if (allValues.some(v => v.name.toLowerCase() === name.toLowerCase())) {
+                showModal('🔄 Duplicate Value', 'A value with this name already exists. Please choose a different name.');
+                return;
+            }
+            
             const customValue = { name, description, isCustom: true };
             customValues.push(customValue);
             selectedValues.push(customValue);
-
-            document.getElementById('customName').value = '';
-            document.getElementById('customDesc').value = '';
-
-            populateGrid();
-            updateCounter();
-            updateSelectedGrid();
+            
+            nameInput.value = '';
+            descInput.value = '';
+            
             displayCustomValues();
+            populateValuesGrid();
+            updateSelectionCounter();
+            updateButtonStates();
+            
+            showModal('✨ Custom Value Added!', `"${name}" has been created and automatically selected for you.`);
         }
 
         // Display custom values
         function displayCustomValues() {
-            const display = document.getElementById('customDisplay');
+            const display = document.getElementById('customValuesDisplay');
+            
             if (customValues.length === 0) {
                 display.innerHTML = '';
                 return;
             }
-
-            display.innerHTML = '<h4>Your Custom Values:</h4>' +
-                customValues.map((v, i) => `
-                    <div style="background: white; border: 2px solid #28a745; border-radius: 8px; padding: 10px; margin: 5px 0; position: relative;">
-                        <strong>${v.name} ✨</strong><br>
-                        <small>${v.description}</small>
-                        <button onclick="removeCustom(${i})" style="position: absolute; top: 5px; right: 5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer;">×</button>
-                    </div>
-                `).join('');
+            
+            display.innerHTML = '<h4 style="color: var(--chapman-blue); margin-bottom: 15px;">Your Custom Values:</h4>';
+            
+            customValues.forEach((value, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'custom-value-tag';
+                tag.innerHTML = `
+                    <strong>${value.name} ✨</strong><br>
+                    <small style="color: #666;">${value.description}</small>
+                    <button class="remove-btn" onclick="removeCustomValue(${index})">×</button>
+                `;
+                display.appendChild(tag);
+            });
         }
 
         // Remove custom value
-        function removeCustom(index) {
-            const removed = customValues[index];
-            customValues.splice(index, 1);
-            selectedValues = selectedValues.filter(v => !(v.isCustom && v.name === removed.name));
-            populateGrid();
-            updateCounter();
-            updateSelectedGrid();
-            displayCustomValues();
-        }
-
-        // Update counter
-        function updateCounter() {
-            const counter = document.getElementById('counter');
-            const remaining = 6 - selectedValues.length;
-
-            if (selectedValues.length === 0) {
-                counter.innerHTML = '🎯 Select up to 6 values that resonate with you';
-            } else if (remaining > 0) {
-                counter.innerHTML = `✅ ${selectedValues.length} selected • You can select ${remaining} more value${remaining === 1 ? '' : 's'}`;
-            } else {
-                counter.innerHTML = '🎉 Perfect! You\'ve selected 6 values. Now choose your top 3 below!';
+        function removeCustomValue(index) {
+            const valueToRemove = customValues[index];
+            
+            // Remove from ranked if present
+            for (let rank = 1; rank <= 3; rank++) {
+                if (rankedValues[rank] && rankedValues[rank].name === valueToRemove.name && rankedValues[rank].isCustom) {
+                    rankedValues[rank] = null;
+                }
             }
+            
+            // Remove from selected
+            selectedValues = selectedValues.filter(v => 
+                !(v.name === valueToRemove.name && v.isCustom)
+            );
+            
+            // Remove from custom
+            customValues.splice(index, 1);
+            
+            displayCustomValues();
+            populateValuesGrid();
+            updateSelectionCounter();
+            updateButtonStates();
         }
 
-        // Update selected values grid for ranking
-        function updateSelectedGrid() {
-            const grid = document.getElementById('selectedGrid');
-            grid.innerHTML = '';
-
+        // Populate ranking pool
+        function populateRankingPool() {
+            const pool = document.getElementById('rankingPool');
+            pool.innerHTML = '';
+            
             selectedValues.forEach(value => {
                 const card = document.createElement('div');
                 card.className = 'value-card';
+                card.draggable = true;
                 if (value.isCustom) card.classList.add('custom');
-
-                // Check if already ranked
-                const isRanked = topThree.includes(value);
-                if (isRanked) card.style.opacity = '0.5';
-
+                
                 card.innerHTML = `
                     <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
                     <p>${value.description}</p>
                 `;
+                
+                card.addEventListener('dragstart', (e) => {
+                    draggedValue = value;
+                    e.target.style.opacity = '0.5';
+                });
+                
+                card.addEventListener('dragend', (e) => {
+                    e.target.style.opacity = '1';
+                });
+                
+                pool.appendChild(card);
+            });
+            
+            updateRankingDisplay();
+        }
 
-                card.onclick = () => rankValue(value);
-                grid.appendChild(card);
+        // Setup drag and drop
+        function setupDragAndDrop() {
+            document.addEventListener('dragover', (e) => e.preventDefault());
+            
+            document.querySelectorAll('.rank-column').forEach(column => {
+                column.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    column.classList.add('drag-over');
+                });
+                
+                column.addEventListener('dragleave', () => {
+                    column.classList.remove('drag-over');
+                });
+                
+                column.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    column.classList.remove('drag-over');
+                    
+                    const rank = parseInt(column.dataset.rank);
+                    
+                    if (draggedValue) {
+                        // Remove from other ranks
+                        for (let r = 1; r <= 3; r++) {
+                            if (rankedValues[r] && rankedValues[r].name === draggedValue.name && 
+                                Boolean(rankedValues[r].isCustom) === Boolean(draggedValue.isCustom)) {
+                                rankedValues[r] = null;
+                            }
+                        }
+                        
+                        rankedValues[rank] = draggedValue;
+                        updateRankingDisplay();
+                        updateButtonStates();
+                    }
+                });
             });
         }
 
-        // Rank a value in top 3
-        function rankValue(value) {
-            // Find first empty slot
-            for (let i = 0; i < 3; i++) {
-                if (!topThree[i]) {
-                    topThree[i] = value;
-                    updateRankDisplay();
-                    updateSelectedGrid();
-                    
-                    if (topThree[0] && topThree[1] && topThree[2]) {
-                        document.getElementById('resultsBtn').disabled = false;
-                    }
-                    return;
-                }
-            }
-
-            // If all slots full, replace the last one
-            topThree[2] = value;
-            updateRankDisplay();
-            updateSelectedGrid();
-        }
-
-        // Update rank display
-        function updateRankDisplay() {
-            for (let i = 0; i < 3; i++) {
-                const rankBox = document.getElementById(`rank${i + 1}`);
-                const valueDiv = document.getElementById(`value${i + 1}`);
+        // Update ranking display
+        function updateRankingDisplay() {
+            document.querySelectorAll('.rank-column').forEach(column => {
+                const rank = parseInt(column.dataset.rank);
+                const existingSorted = column.querySelector('.sorted-value');
+                if (existingSorted) existingSorted.remove();
                 
-                if (topThree[i]) {
-                    rankBox.classList.add('has-value');
-                    valueDiv.innerHTML = `
-                        <div style="background: white; padding: 10px; border-radius: 8px; margin-top: 10px;">
-                            <strong>${topThree[i].name}${topThree[i].isCustom ? ' ✨' : ''}</strong><br>
-                            <small>${topThree[i].description}</small>
-                            <button onclick="removeRank(${i})" style="float: right; background: #dc3545; color: white; border: none; border-radius: 3px; padding: 2px 6px; cursor: pointer;">Remove</button>
-                        </div>
+                if (rankedValues[rank]) {
+                    const sortedCard = document.createElement('div');
+                    sortedCard.className = 'sorted-value';
+                    if (rankedValues[rank].isCustom) sortedCard.classList.add('custom');
+                    
+                    sortedCard.innerHTML = `
+                        <h4>${rankedValues[rank].name}${rankedValues[rank].isCustom ? ' ✨' : ''}</h4>
+                        <p>${rankedValues[rank].description}</p>
                     `;
-                } else {
-                    rankBox.classList.remove('has-value');
-                    valueDiv.innerHTML = '';
+                    
+                    sortedCard.draggable = true;
+                    sortedCard.addEventListener('dragstart', (e) => {
+                        draggedValue = rankedValues[rank];
+                        rankedValues[rank] = null;
+                        e.target.style.opacity = '0.5';
+                    });
+                    
+                    column.appendChild(sortedCard);
                 }
+            });
+            
+            // Update pool visibility
+            const pool = document.getElementById('rankingPool');
+            if (pool) {
+                pool.querySelectorAll('.value-card').forEach(card => {
+                    const cardTitle = card.querySelector('h3').textContent.replace(' ✨', '');
+                    const isRanked = Object.values(rankedValues).some(rv => rv && rv.name === cardTitle);
+                    card.style.display = isRanked ? 'none' : 'block';
+                });
             }
-        }
-
-        // Remove from ranking
-        function removeRank(index) {
-            topThree[index] = null;
-            updateRankDisplay();
-            updateSelectedGrid();
-            document.getElementById('resultsBtn').disabled = !(topThree[0] && topThree[1] && topThree[2]);
         }
 
         // Show results
         function showResults() {
-            studentInfo = {
-                name: document.getElementById('studentName').value,
-                date: document.getElementById('surveyDate').value
-            };
-
-            const resultsDiv = document.getElementById('results');
-            const topValuesDiv = document.getElementById('topValues');
-
-            topValuesDiv.innerHTML = '';
-            for (let i = 0; i < 3; i++) {
-                const value = topThree[i];
+            // Populate top 3
+            const topValuesContainer = document.getElementById('topValues');
+            topValuesContainer.innerHTML = '';
+            
+            [1, 2, 3].forEach(rank => {
+                const value = rankedValues[rank];
                 const card = document.createElement('div');
                 card.className = 'top-value';
+                if (value.isCustom) card.classList.add('custom');
+                
                 card.innerHTML = `
-                    <div class="value-rank">#${i + 1}</div>
+                    <div class="value-rank">#${rank}</div>
                     <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
                     <p>${value.description}</p>
-                    ${value.isCustom ? '<div style="color: #28a745; font-weight: bold; margin-top: 10px;">Your Custom Value</div>' : ''}
+                    ${value.isCustom ? '<div style="color: var(--success); font-weight: 600; margin-top: 12px; font-size: 0.9em;">Your Custom Value</div>' : ''}
                 `;
-                topValuesDiv.appendChild(card);
-            }
+                topValuesContainer.appendChild(card);
+            });
+            
+            // Populate all values list
+            const allValuesList = document.getElementById('allValuesList');
+            allValuesList.innerHTML = '';
+            
+            selectedValues.forEach(value => {
+                const item = document.createElement('div');
+                item.className = 'value-item';
+                if (value.isCustom) item.classList.add('custom');
+                
+                // Check if ranked
+                let rankBadge = '';
+                for (let rank = 1; rank <= 3; rank++) {
+                    if (rankedValues[rank] && rankedValues[rank].name === value.name && 
+                        Boolean(rankedValues[rank].isCustom) === Boolean(value.isCustom)) {
+                        item.classList.add('ranked');
+                        rankBadge = `<span class="rank-badge">Ranked #${rank}</span>`;
+                        break;
+                    }
+                }
+                
+                item.innerHTML = `
+                    <h4>${value.name}${value.isCustom ? ' ✨' : ''}${rankBadge}</h4>
+                    <p>${value.description}</p>
+                `;
+                allValuesList.appendChild(item);
+            });
+            
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep = 5;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-            resultsDiv.classList.add('show');
-            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        // Show modal
+        function showModal(title, message) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                    <button onclick="this.closest('.modal-overlay').remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.remove();
+            });
         }
 
         // Generate PDF
         function generatePDF() {
-            if (!studentInfo.name) {
-                alert('Please enter your name first.');
-                return;
-            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Colors
+            const chapmanBlue = [0, 32, 91];
+            const chapmanGold = [196, 160, 0];
+            const textDark = [26, 26, 46];
+            const textMuted = [100, 100, 110];
+            const successGreen = [46, 125, 50];
 
-            // Create HTML content
-            let topThreeHTML = '';
-            for (let i = 0; i < 3; i++) {
-                const value = topThree[i];
-                topThreeHTML += `
-                    <div style="border: 3px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 10px;">
-                        <h3 style="color: #667eea; font-size: 24px; margin-bottom: 10px;">#${i + 1} - ${value.name}${value.isCustom ? ' ✨' : ''}</h3>
-                        <p style="color: #555; font-size: 16px;">${value.description}</p>
-                        ${value.isCustom ? '<p style="color: #28a745; font-weight: bold; margin-top: 10px;">Your Personal Custom Value</p>' : ''}
-                    </div>
-                `;
-            }
+            // Header
+            doc.setFillColor(...chapmanBlue);
+            doc.rect(0, 0, 210, 45, 'F');
+            
+            doc.setFontSize(10);
+            doc.setTextColor(255, 255, 255);
+            doc.text('CHAPMAN UNIVERSITY', 105, 12, { align: 'center' });
+            
+            doc.setFontSize(9);
+            doc.setTextColor(...chapmanGold);
+            doc.text('Argyros College of Business and Economics', 105, 18, { align: 'center' });
+            
+            doc.setFontSize(18);
+            doc.setTextColor(255, 255, 255);
+            doc.text('Values Discovery Assessment', 105, 30, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.text('Official Results Report', 105, 38, { align: 'center' });
 
-            // All 6 selected values
-            let allSixHTML = '';
-            for (let i = 0; i < selectedValues.length; i++) {
-                const value = selectedValues[i];
+            // Gold accent
+            doc.setFillColor(...chapmanGold);
+            doc.rect(0, 45, 210, 2, 'F');
+
+            // Student info
+            let y = 55;
+            doc.setFontSize(11);
+            doc.setTextColor(...textDark);
+            doc.text(`Student: ${studentInfo.name}`, 20, y);
+            doc.text(`Date: ${new Date(studentInfo.date).toLocaleDateString()}`, 120, y);
+            y += 15;
+
+            // Top 3 Header
+            doc.setFillColor(...chapmanBlue);
+            doc.roundedRect(20, y, 170, 12, 2, 2, 'F');
+            doc.setFontSize(12);
+            doc.setTextColor(255, 255, 255);
+            doc.text('YOUR TOP 3 CORE VALUES', 105, y + 8, { align: 'center' });
+            y += 20;
+
+            // Top 3 Values
+            [1, 2, 3].forEach(rank => {
+                const value = rankedValues[rank];
+                
+                doc.setFontSize(12);
+                doc.setTextColor(...chapmanBlue);
+                doc.text(`#${rank} — ${value.name}${value.isCustom ? ' (Custom)' : ''}`, 25, y);
+                y += 7;
+                
+                doc.setFontSize(9);
+                doc.setTextColor(...textMuted);
+                const lines = doc.splitTextToSize(value.description, 160);
+                lines.forEach(line => {
+                    doc.text(line, 30, y);
+                    y += 5;
+                });
+                y += 8;
+            });
+
+            // All Selected Values
+            y += 5;
+            doc.setFillColor(...chapmanGold);
+            doc.roundedRect(20, y, 170, 10, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setTextColor(...chapmanBlue);
+            doc.text(`ALL SELECTED VALUES (${selectedValues.length} Total)`, 105, y + 7, { align: 'center' });
+            y += 18;
+
+            selectedValues.forEach((value, index) => {
+                if (y > 260) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                // Check if ranked
                 let rankText = '';
-                for (let j = 0; j < 3; j++) {
-                    if (topThree[j] && topThree[j].name === value.name && Boolean(topThree[j].isCustom) === Boolean(value.isCustom)) {
-                        rankText = ` (Ranked #${j + 1})`;
+                for (let rank = 1; rank <= 3; rank++) {
+                    if (rankedValues[rank] && rankedValues[rank].name === value.name && 
+                        Boolean(rankedValues[rank].isCustom) === Boolean(value.isCustom)) {
+                        rankText = ` (Ranked #${rank})`;
                         break;
                     }
                 }
+                
+                doc.setFontSize(10);
+                doc.setTextColor(value.isCustom ? successGreen[0] : chapmanBlue[0], 
+                                 value.isCustom ? successGreen[1] : chapmanBlue[1], 
+                                 value.isCustom ? successGreen[2] : chapmanBlue[2]);
+                doc.text(`${value.name}${value.isCustom ? ' ✨' : ''}${rankText}`, 25, y);
+                y += 5;
+                
+                doc.setFontSize(8);
+                doc.setTextColor(...textMuted);
+                doc.text(value.description, 30, y);
+                y += 8;
+            });
 
-                const borderColor = value.isCustom ? '#28a745' : '#ddd';
-                allSixHTML += `
-                    <div style="border: 2px solid ${borderColor}; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fafafa;">
-                        <h4 style="color: #2c3e50; margin-bottom: 5px;">${value.name}${value.isCustom ? ' ✨' : ''}${rankText}</h4>
-                        <p style="color: #666; font-size: 14px;">${value.description}</p>
-                        ${value.isCustom ? '<p style="color: #28a745; font-weight: bold; font-size: 12px; margin-top: 5px;">Your Personal Custom Value</p>' : ''}
-                    </div>
-                `;
+            // Reflection Questions
+            if (y > 200) {
+                doc.addPage();
+                y = 20;
+            }
+            
+            y += 10;
+            doc.setFillColor(...chapmanBlue);
+            doc.roundedRect(20, y, 170, 10, 2, 2, 'F');
+            doc.setFontSize(11);
+            doc.setTextColor(255, 255, 255);
+            doc.text('REFLECTION QUESTIONS', 105, y + 7, { align: 'center' });
+            y += 18;
+
+            const reflectionQuestions = [
+                'How do your top 3 values currently show up in your daily life and decisions?',
+                'Can you recall a time when one of your core values was challenged? How did you respond?',
+                'How might your values influence the type of organization or career you pursue?',
+                'Are there any values you aspire to that aren\'t yet fully reflected in your behavior?',
+                'How might understanding your values help you navigate ethical dilemmas at work?'
+            ];
+
+            doc.setFontSize(9);
+            doc.setTextColor(...textDark);
+            
+            reflectionQuestions.forEach((question, index) => {
+                if (y > 265) {
+                    doc.addPage();
+                    y = 20;
+                }
+                const lines = doc.splitTextToSize(`${index + 1}. ${question}`, 165);
+                lines.forEach(line => {
+                    doc.text(line, 25, y);
+                    y += 5;
+                });
+                y += 8;
+            });
+
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(...textMuted);
+                doc.text(`Page ${i} of ${pageCount}`, 105, 287, { align: 'center' });
+                doc.text('Chapman University • Argyros College of Business and Economics • MGMT 316', 105, 292, { align: 'center' });
             }
 
-            const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-    <title>Values Survey Results</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.6; }
-        h1, h2 { color: #2c3e50; }
-    </style>
-</head>
-<body>
-    <h1 style="text-align: center;">Values Discovery Survey Results</h1>
-    
-    <div style="background: #f8f9ff; padding: 20px; border-radius: 10px; border: 2px solid #667eea; margin: 20px 0;">
-        <strong>Name:</strong> ${studentInfo.name}<br>
-        <strong>Date:</strong> ${new Date(studentInfo.date).toLocaleDateString()}
-    </div>
-    
-    <h2>Your Top 3 Core Values (Ranked)</h2>
-    <p>These are your most important values - the principles that should guide your key life decisions:</p>
-    ${topThreeHTML}
-
-    <h2 style="color: #d63384;">All Your Selected Values (${selectedValues.length} Total)</h2>
-    <p><strong>These are all ${selectedValues.length} values you initially selected as important to you.</strong> This serves as a point-in-time record to help you track how your values may evolve over time:</p>
-    
-    <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 8px; margin: 20px 0;">
-        <strong>💡 Future Reflection:</strong> When you retake this survey later, compare these results to see how your values have remained consistent or evolved.
-    </div>
-    
-    ${allSixHTML}
-    
-    <div style="text-align: center; margin-top: 50px; border-top: 2px solid #eee; padding-top: 20px;">
-        <p><strong>Values Discovery Survey</strong> | Generated on ${new Date().toLocaleDateString()}</p>
-        <p style="font-style: italic;">These values represent what matters most to you.</p>
-    </div>
-</body>
-</html>`;
-
-            // Open in new window
-            const printWindow = window.open('', '_blank');
-            if (printWindow) {
-                printWindow.document.write(htmlContent);
-                printWindow.document.close();
-                printWindow.onload = () => setTimeout(() => printWindow.print(), 1000);
-                alert('PDF window opened! Use Ctrl+P to save as PDF.');
-            } else {
-                // Fallback: download as HTML file
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${studentInfo.name.replace(/\s+/g, '_')}_Values_Survey.html`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert('HTML file downloaded! Open it in your browser and print as PDF.');
-            }
+            // Save
+            const fileName = `Values_Assessment_${studentInfo.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
         }
 
         // Reset survey
         function resetSurvey() {
+            currentStep = 1;
             selectedValues = [];
             customValues = [];
-            topThree = [null, null, null];
+            rankedValues = { 1: null, 2: null, 3: null };
             studentInfo = {};
             
             document.getElementById('studentName').value = '';
-            document.getElementById('surveyDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('customName').value = '';
-            document.getElementById('customDesc').value = '';
-            document.getElementById('results').classList.remove('show');
-            document.getElementById('resultsBtn').disabled = true;
+            document.getElementById('surveyDate').valueAsDate = new Date();
+            document.getElementById('customValueName').value = '';
+            document.getElementById('customValueDescription').value = '';
             
-            populateGrid();
-            updateCounter();
-            updateSelectedGrid();
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step1').classList.add('active');
+            
             displayCustomValues();
+            populateValuesGrid();
+            updateSelectionCounter();
+            updateButtonStates();
+            updateProgress();
             
-            for (let i = 1; i <= 3; i++) {
-                document.getElementById(`rank${i}`).classList.remove('has-value');
-                document.getElementById(`value${i}`).innerHTML = '';
-            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Initialize when page loads
-        window.onload = init;
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initSurvey);
     </script>
 </body>
 </html>

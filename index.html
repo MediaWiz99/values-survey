@@ -1041,6 +1041,9 @@
                     <h2>🎯 Your Core Values</h2>
                     <p>These are your top 3 values—the principles that should guide your most important decisions.</p>
                     
+                    <!-- TRACKER SUMMARY SECTION - Dynamic content added by showResults() -->
+                    <div id="trackerSummary"></div>
+                    
                     <div class="top-values" id="topValues"></div>
 
                     <div class="all-values-summary">
@@ -1048,6 +1051,9 @@
                         <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">These are all the values you identified as important. Keep this record to track how your values may evolve over time.</p>
                         <div class="values-list" id="allValuesList"></div>
                     </div>
+
+                    <!-- SWOT Preview Section -->
+                    <div id="swotPreview" style="background: linear-gradient(135deg, var(--blue-light) 0%, #f0f4fa 100%); border-radius: 14px; padding: 25px; margin: 20px 0; border: 2px solid var(--chapman-blue);"></div>
 
                     <div class="reflection-section">
                         <h3>🤔 Reflection Questions</h3>
@@ -1610,6 +1616,122 @@
             currentStep = 5;
             document.getElementById(`step${currentStep}`).classList.add('active');
             updateProgress();
+            
+            // Generate Tracker Summary
+            const trackerCode = `VDA-${rankedValues[1].name.substring(0,3).toUpperCase()}-${selectedValues.length}`;
+            const customCount = selectedValues.filter(v => v.isCustom).length;
+            
+            // Determine value categories for the top 3
+            const valueCategories = {
+                // Achievement/Success oriented
+                achievement: ['Achievement', 'Success', 'Excellence', 'Competency', 'Recognition', 'Fame', 'Status', 'Wealth', 'Power'],
+                // Relationship oriented
+                relationship: ['Family', 'Friendships', 'Love', 'Intimacy', 'Belonging', 'Connection', 'Community', 'Loyalty', 'Teamwork'],
+                // Personal Growth oriented
+                growth: ['Growth', 'Learning', 'Knowledge', 'Curiosity', 'Wisdom', 'Challenge', 'Creativity', 'Openness'],
+                // Service/Impact oriented
+                service: ['Service', 'Contribution', 'Compassion', 'Generosity', 'Citizenship', 'Justice', 'Equality', 'Stewardship'],
+                // Integrity oriented
+                integrity: ['Honesty', 'Integrity', 'Authenticity', 'Truth', 'Trustworthiness', 'Reliability', 'Responsibility', 'Fairness'],
+                // Freedom oriented
+                freedom: ['Freedom', 'Autonomy', 'Independence', 'Adventure', 'Boldness', 'Flexibility', 'Adaptability'],
+                // Security oriented
+                security: ['Security', 'Stability', 'Financial Stability', 'Health', 'Home', 'Order', 'Peace'],
+                // Spiritual/Purpose oriented
+                spiritual: ['Faith', 'Spirituality', 'Meaning', 'Purpose', 'Gratitude', 'Grace', 'Peace']
+            };
+            
+            // Determine primary value orientation
+            let valueOrientation = 'Balanced';
+            const top3Names = [rankedValues[1].name, rankedValues[2].name, rankedValues[3].name];
+            for (const [category, vals] of Object.entries(valueCategories)) {
+                const matches = top3Names.filter(n => vals.includes(n)).length;
+                if (matches >= 2) {
+                    valueOrientation = category.charAt(0).toUpperCase() + category.slice(1) + '-Oriented';
+                    break;
+                }
+            }
+            
+            document.getElementById('trackerSummary').innerHTML = `
+                <div style="background: linear-gradient(135deg, #1a3a7a 0%, #00205B 100%); color: white; padding: 25px; border-radius: 14px; margin: 20px 0 30px 0;">
+                    <h3 style="color: #C4A000; margin-bottom: 15px; font-size: 1.3em;">📋 Assessment Tracker Summary</h3>
+                    <p style="font-size: 0.9em; opacity: 0.9; margin-bottom: 15px;">Copy this information into your Assessment Tracker at the end of the semester.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div>
+                                <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">#1 Core Value</div>
+                                <div style="font-size: 1.3em; font-weight: 700; color: #F5E6A3;">${rankedValues[1].name}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">#2 Core Value</div>
+                                <div style="font-size: 1.3em; font-weight: 700; color: #F5E6A3;">${rankedValues[2].name}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">#3 Core Value</div>
+                                <div style="font-size: 1.3em; font-weight: 700; color: #F5E6A3;">${rankedValues[3].name}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div>
+                                <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Values Selected</div>
+                                <div style="font-size: 1.2em; font-weight: 600;">${selectedValues.length} Total</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Custom Values</div>
+                                <div style="font-size: 1.2em; font-weight: 600;">${customCount} Added</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px;">Value Orientation</div>
+                                <div style="font-size: 1.1em; font-weight: 600;">${valueOrientation}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(196, 160, 0, 0.2); padding: 15px; border-radius: 8px; border-left: 4px solid #C4A000;">
+                        <div style="font-size: 0.8em; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Key Characteristics for SWOT Analysis</div>
+                        <div style="font-size: 0.95em; line-height: 1.6;">
+                            <strong>#1 ${rankedValues[1].name}:</strong> ${rankedValues[1].description}<br>
+                            <strong>#2 ${rankedValues[2].name}:</strong> ${rankedValues[2].description}<br>
+                            <strong>#3 ${rankedValues[3].name}:</strong> ${rankedValues[3].description}
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.1); border-radius: 8px; font-family: monospace; font-size: 0.85em;">
+                        <span style="opacity: 0.7;">Tracker Code:</span> <strong style="color: #F5E6A3;">${trackerCode}</strong> 
+                        <span style="opacity: 0.7; margin-left: 15px;">|</span>
+                        <span style="opacity: 0.7; margin-left: 15px;">Top 3:</span> <strong>${rankedValues[1].name.substring(0,3)}-${rankedValues[2].name.substring(0,3)}-${rankedValues[3].name.substring(0,3)}</strong>
+                    </div>
+                </div>
+            `;
+            
+            // Generate SWOT Preview
+            document.getElementById('swotPreview').innerHTML = `
+                <h4 style="color: var(--chapman-blue); margin-bottom: 15px; font-size: 1.2em;">📊 SWOT Analysis Preview (For Assessment Tracker)</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 15px;">This preview shows how your Core Values will contribute to your comprehensive SWOT analysis.</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background: #E8F5E9; padding: 15px; border-radius: 10px; border-left: 4px solid #2E7D32;">
+                        <strong style="color: #2E7D32; font-size: 0.9em;">STRENGTH</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px; color: var(--text-secondary);">Clear personal compass guided by ${rankedValues[1].name}, ${rankedValues[2].name}, and ${rankedValues[3].name}. Strong foundation for ethical decision-making.</p>
+                    </div>
+                    <div style="background: #FFEBEE; padding: 15px; border-radius: 10px; border-left: 4px solid #C62828;">
+                        <strong style="color: #C62828; font-size: 0.9em;">WEAKNESS</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px; color: var(--text-secondary);">May experience tension when organizational demands conflict with core values. Potential difficulty in environments that don't align with your value orientation.</p>
+                    </div>
+                    <div style="background: #E3F2FD; padding: 15px; border-radius: 10px; border-left: 4px solid #1565C0;">
+                        <strong style="color: #1565C0; font-size: 0.9em;">OPPORTUNITY</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px; color: var(--text-secondary);">Seek organizations and roles that align with your core values. Use ${rankedValues[1].name} as a guiding principle for career decisions and leadership approach.</p>
+                    </div>
+                    <div style="background: #FFF3E0; padding: 15px; border-radius: 10px; border-left: 4px solid #E65100;">
+                        <strong style="color: #E65100; font-size: 0.9em;">THREAT</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px; color: var(--text-secondary);">Values-organization misalignment leading to job dissatisfaction. Potential for ethical conflicts if placed in environments that challenge your core principles.</p>
+                    </div>
+                </div>
+            `;
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 

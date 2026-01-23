@@ -388,6 +388,19 @@
             transform: scale(1.1);
         }
 
+        .value-card[draggable="true"] {
+            cursor: grab;
+        }
+        
+        .value-card[draggable="true"]:active {
+            cursor: grabbing;
+        }
+        
+        .value-card.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
         .value-card.ready-to-place {
             border-color: var(--chapman-gold);
             box-shadow: 0 0 0 3px rgba(196, 160, 0, 0.3);
@@ -398,6 +411,7 @@
             border-color: var(--chapman-gold);
             border-style: solid;
             background: linear-gradient(135deg, #fffef8 0%, #fef9e7 100%);
+            animation: pulse 1s infinite;
         }
 
         @keyframes pulse {
@@ -1246,18 +1260,43 @@
         }
 
         // ============================================
-        // RANKING STEP - SIMPLIFIED IMPLEMENTATION
+        // RANKING STEP - DRAG AND DROP + CLICK IMPLEMENTATION
         // ============================================
+        
+        let draggedValue = null;
         
         function setupRankingStep() {
             // Reset any previous selections
             selectedCardForPlacement = null;
+            draggedValue = null;
             
             // Populate the pool with selected values
             renderRankingPool();
             
-            // Setup click handlers on rank columns
+            // Setup drag-and-drop AND click handlers on rank columns
             document.querySelectorAll('.rank-column').forEach(column => {
+                // Drag events
+                column.ondragover = function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                };
+                
+                column.ondragleave = function(e) {
+                    this.classList.remove('drag-over');
+                };
+                
+                column.ondrop = function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    const rank = parseInt(this.dataset.rank);
+                    if (draggedValue) {
+                        placeValueInRank(draggedValue, rank);
+                        draggedValue = null;
+                    }
+                };
+                
+                // Click handler (backup for click-to-place)
                 column.onclick = function(e) {
                     // Don't trigger if clicking on a sorted value
                     if (e.target.closest('.sorted-value')) return;
@@ -1270,6 +1309,22 @@
                     }
                 };
             });
+            
+            // Setup drop handler on the pool (to return ranked values)
+            const pool = document.getElementById('rankingPool');
+            pool.ondragover = function(e) {
+                e.preventDefault();
+            };
+            pool.ondrop = function(e) {
+                e.preventDefault();
+                // If dragging from rank, the value is already removed, just re-render
+                if (draggedValue) {
+                    draggedValue = null;
+                    renderRankingPool();
+                    renderRankedValues();
+                    updateButtonStates();
+                }
+            };
             
             renderRankedValues();
         }
@@ -1290,13 +1345,38 @@
                 card.className = 'value-card';
                 if (value.isCustom) card.classList.add('custom');
                 card.dataset.index = index;
+                card.draggable = true;
+                card.style.cursor = 'grab';
                 
                 card.innerHTML = `
                     <h3>${value.name}${value.isCustom ? ' ✨' : ''}</h3>
                     <p>${value.description}</p>
-                    <small style="display: block; margin-top: 10px; color: var(--chapman-gold); font-weight: 600;">Click to select, then click a rank</small>
+                    <small style="display: block; margin-top: 10px; color: var(--chapman-gold); font-weight: 600;">🖐️ Drag to rank OR click then click a rank box</small>
                 `;
                 
+                // Drag events
+                card.ondragstart = function(e) {
+                    draggedValue = value;
+                    this.style.opacity = '0.5';
+                    this.style.cursor = 'grabbing';
+                    // Highlight all rank columns
+                    document.querySelectorAll('.rank-column').forEach(col => {
+                        col.classList.add('awaiting-drop');
+                    });
+                };
+                
+                card.ondragend = function(e) {
+                    this.style.opacity = '1';
+                    this.style.cursor = 'grab';
+                    draggedValue = null;
+                    // Remove highlights
+                    document.querySelectorAll('.rank-column').forEach(col => {
+                        col.classList.remove('awaiting-drop');
+                        col.classList.remove('drag-over');
+                    });
+                };
+                
+                // Click handler (alternative to drag)
                 card.onclick = function() {
                     selectCardForPlacement(value, this);
                 };
@@ -1380,12 +1460,43 @@
                     const sortedDiv = document.createElement('div');
                     sortedDiv.className = 'sorted-value';
                     if (value.isCustom) sortedDiv.classList.add('custom');
+                    sortedDiv.draggable = true;
+                    sortedDiv.style.cursor = 'grab';
                     
                     sortedDiv.innerHTML = `
                         <h4>${value.name}${value.isCustom ? ' ✨' : ''}</h4>
                         <p>${value.description}</p>
-                        <small style="display: block; margin-top: 8px; color: var(--chapman-gold); font-weight: 600; cursor: pointer;">✕ Click to remove</small>
+                        <small style="display: block; margin-top: 8px; color: var(--chapman-gold); font-weight: 600; cursor: pointer;">✕ Click to remove | 🖐️ Drag to move</small>
                     `;
+                    
+                    // Drag events for reordering
+                    sortedDiv.ondragstart = function(e) {
+                        e.stopPropagation();
+                        draggedValue = value;
+                        // Remove from current rank
+                        rankedValues[rank] = null;
+                        this.style.opacity = '0.5';
+                        // Highlight all rank columns
+                        document.querySelectorAll('.rank-column').forEach(col => {
+                            col.classList.add('awaiting-drop');
+                        });
+                    };
+                    
+                    sortedDiv.ondragend = function(e) {
+                        this.style.opacity = '1';
+                        // If not dropped on a rank, put back in pool
+                        if (draggedValue) {
+                            renderRankingPool();
+                            renderRankedValues();
+                            updateButtonStates();
+                        }
+                        draggedValue = null;
+                        // Remove highlights
+                        document.querySelectorAll('.rank-column').forEach(col => {
+                            col.classList.remove('awaiting-drop');
+                            col.classList.remove('drag-over');
+                        });
+                    };
                     
                     sortedDiv.onclick = function(e) {
                         e.stopPropagation();
@@ -1786,6 +1897,9 @@
             // Gold accent
             doc.setFillColor(...chapmanGold);
             doc.rect(0, 45, 210, 2, 'F');
+            
+            // Generate tracker code for PDF
+            const trackerCode = 'VDA-' + rankedValues[1].name.substring(0,3).toUpperCase() + '-' + selectedValues.length;
 
             // Student info
             let y = 55;
@@ -1793,7 +1907,15 @@
             doc.setTextColor(...textDark);
             doc.text(`Student: ${studentInfo.name}`, 20, y);
             doc.text(`Date: ${new Date(studentInfo.date).toLocaleDateString()}`, 120, y);
-            y += 15;
+            y += 8;
+            
+            // Tracker Code Bar
+            doc.setFillColor(...chapmanBlue);
+            doc.roundedRect(20, y, 170, 10, 2, 2, 'F');
+            doc.setFontSize(9);
+            doc.setTextColor(255, 255, 255);
+            doc.text('Tracker: ' + trackerCode + '  |  Top Value: ' + rankedValues[1].name + '  |  Values Selected: ' + selectedValues.length, 105, y + 7, { align: 'center' });
+            y += 17;
 
             // Top 3 Header
             doc.setFillColor(...chapmanBlue);
